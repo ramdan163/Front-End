@@ -1,0 +1,39 @@
+{
+  "pasen": [
+    {
+      "date": "2023-05-01",
+      "name": "Ramdhan",
+      "usia": "23",
+      "poli": "Poli Bedah Umum",
+      "id": 1
+    },
+    {
+      "date": "2023-05-02",
+      "name": "Ujang Imran",
+      "usia": "46",
+      "poli": "Poli Lansia",
+      "id": 2
+    },
+    {
+      "date": "2023-05-03",
+      "name": "Zindan Sikebal",
+      "usia": "26",
+      "poli": "Poli OBGYN",
+      "id": 3
+    }
+  ],
+  "poli": [
+    {
+      "id": 1,
+      "name": "Poli Bedah Umum"
+    },
+    {
+      "id": 2,
+      "name": "Poli OBGYN"
+    },
+    {
+      "id": 3,
+      "name": "Poli Lansia"
+    }
+  ]
+}

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avicena Clinic</title>
+    <style>
+        /* Styling for the heading */
+        h1 {
+          font-size: 48px;
+          text-align: center;
+          color: #2f3542;
+          margin-bottom: 20px;
+          text-transform: uppercase;
+        }
+  
+        /* Styling for the form input fields */
+        input[type="date"],
+        input[type="text"],
+        input[type="number"],
+        select {
+          padding: 10px;
+          margin-right: 10px;
+          margin-bottom: 10px;
+          border-radius: 5px;
+          border: 1px solid #dfe4ea;
+          font-size: 16px;
+          width: 200px;
+          background-color: #f1f2f6;
+          color: #57606f;
+        }
+  
+        /* Styling for the 'Simpan' button */
+        button#button {
+          background-color: #2980b9;
+          border: none;
+          color: white;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin-bottom: 10px;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+  
+        /* Styling for the table */
+        table {
+          border-collapse: collapse;
+          width: 100%;
+          margin-top: 20px;
+        }
+  
+        /* Styling for the table headers */
+        th {
+          background-color: #2980b9;
+          color: white;
+          font-size: 18px;
+          padding: 10px;
+          text-align: center;
+        }
+  
+        /* Styling for the table cells */
+        td {
+          font-size: 16px;
+          padding: 10px;
+          text-align: center;
+        }
+  
+        /* Styling for the 'Edit' and 'Delete' buttons */
+        button {
+          background-color: #2ecc71;
+          border: none;
+          color: white;
+          padding: 8px 16px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 14px;
+          margin: 4px 2px;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+  
+        /* Styling for the 'Edit' button */
+        button.edit {
+          background-color: #f1c40f;
+        }
+  
+        /* Styling for the 'Delete' button */
+        button.delete {
+          background-color: #e74c3c;
+        }
+      </style>
+    
+</head>
+
+<body>
+    <div>
+        <H1>Avicena Clinic</H1>
+        <br>
+        <p>Daftar Pasien :</p>
+        <div>
+            <input id="date" type="date">
+            <input id="name" type="text" placeholder="Isi nama lengkap disini">
+            <input id="usia" type="number" placeholder="Isi umur disini">
+            <select id="poli">
+                <option>Pilih</option>
+            </select>
+            <button id="button" onclick="saveData()">Simpan</button>
+        </div>
+        <p>Daftar Antrian :</p>
+        <table style="margin-top: 10px;">
+            <thead>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Usia</th>
+                <th>Poli</th>
+                <th colspan="2" style="text-align: center">Action</th>
+            </thead>
+
+            <tbody id="result"></tbody>
+        </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        //EDIT
+        const editData = (id, date, name, usia, poli) => {
+            document.getElementById("date").value = date;
+            document.getElementById("name").value = name;
+            document.getElementById("usia").value = usia;
+            document.getElementById("poli").value = poli;
+            document.getElementById("button").innerText = "Ubah";
+            document
+                .getElementById("button")
+                .setAttribute("onclick", `updateData(${id})`);
+        };
+
+        const updateData = async (id) => {
+            let dateFrom = document.getElementById("date").value;
+            let nameForm = document.getElementById("name").value;
+            let usiaForm = document.getElementById("usia").value;
+            let poliForm = document.getElementById("poli").value;
+            let text = `Betul data ini akan diubah?`;
+            if (confirm(text) == true) {
+                await axios
+                    .patch(`http://localhost:3000/pasen/${id}`, {
+                        date: dateFrom,
+                        name: nameForm,
+                        usia: usiaForm,
+                        poli: poliForm,
+                    })
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        console.log(error.message);
+                    });
+            }
+        };
+
+
+
+        //SAVE/SIMPAN DATA
+        const saveData = async () => {
+            let dateFrom = document.getElementById('date').value;
+            let nameForm = document.getElementById('name').value;
+            let usiaForm = document.getElementById('usia').value;
+            let poliForm = document.getElementById('poli').value;
+            await axios.post(`http://localhost:3000/pasen`, {
+                date: dateFrom,
+                name: nameForm,
+                usia: usiaForm,
+                poli: poliForm
+            })
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error.message)
+                });
+        }
+
+        //DELETE
+        const deleteData = async (id) => {
+            let text = `Betul data ini akan dihapus?`;
+            if (confirm(text) == true) {
+                await axios.delete(`http://localhost:3000/pasen/${id}`)
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        console.log(error.message);
+                    });
+            }
+        }
+
+        // MENGAMPILKAN DATA DARI DATABASE
+        const getData = async () => {
+            await axios.get(`http://localhost:3000/pasen`)
+                .then((response) => {
+                    let bucket = ``;
+                    let pasen = response.data;
+                    console.log(pasen)
+                    if (pasen.length > 0) {
+                        for (let i = 0; i < pasen.length; i++) {
+                            bucket += `
+                            <tr>
+                            <td>${i + 1}</td>
+                            <td>${pasen[i].date}</td>
+                            <td>${pasen[i].name}</td>
+                            <td>${pasen[i].usia}</td>
+                            <td>${pasen[i].poli}</td>
+                            <td>
+                                <button onclick="editData('${pasen[i].id}', '${pasen[i].date}','${pasen[i].name}','${pasen[i].usia}','${pasen[i].poli}')">Edit</button>
+                                </td>
+                            <td>
+                                <button onclick="deleteData(${pasen[i].id})">Delete</button>
+                                </td>
+                            </tr>
+                            `
+                        }
+                    } else {
+                        bucket += `
+                            <tr>
+                            <td colspan="7" style="text-align: center">Data tidak ditemukan</td>
+                            </tr>   
+                        `
+                    }
+                    document.getElementById('result').innerHTML = bucket;
+                })
+                .catch((error) => {
+                    let bucket = `
+                <tr>
+                <td colspan="5" style="text-align: center">${error.messege}</td>
+                </tr>   
+            `
+                    document.getElementById('result').innerHTML = bucket;
+                });
+        };
+        getData();
+
+        const getDatapoli = async () => {
+            await axios.get(`http://localhost:3000/poli`)
+                .then((response) => {
+                    let bucket = ``;
+                    let poli = response.data;
+                    console.log(poli);
+                    if (poli.length > 0) {
+                        for (let i = 0; i < poli.length; i++) {
+                            bucket += `
+                                 <option>${poli[i].name}</option>
+                                `;
+                        }
+                    } else {
+                        bucket += `
+                                 <option>Data tidak ditemukan</option>
+                                `;
+                    }
+                    document.getElementById('poli').innerHTML = bucket;
+                })
+                .catch((error) => {
+                    let bucket = `
+                                 <option>${error.message}</option>
+                                `;
+                    document.getElementById('poli').innerHTML = bucket;
+                });
+        };
+
+        getDatapoli();
+
+    </script>
+</body>
+
+</html>
